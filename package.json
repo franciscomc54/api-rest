@@ -1,0 +1,26 @@
+{
+  "name": "api-rest",
+  "version": "1.0.0",
+  "description": "Proyecto de API RESTful con Node.js y Express para SD",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franciscomc54/api-rest.git"
+  },
+  "keywords": [
+    "CRUD",
+    "REST",
+    "Node",
+    "express",
+    "mongo"
+  ],
+  "author": "Francisco Martinez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franciscomc54/api-rest/issues"
+  },
+  "homepage": "https://github.com/franciscomc54/api-rest#readme"
+}
