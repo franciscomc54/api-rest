@@ -1,8 +1,13 @@
 var http = require('http');
+var server = http.createServer();
 
-http.createServer((request, response) => {
+function HTTP_Response(request, response) {
     response.writeHead(200, {'Content-Type': 'text/plain'});
-    response.end('Hola a todos y a todas!\n');
-}).listen(8080);
+    response.write('Hola a todos y a todas!\n');
+    response.end();
+};
+
+server.on('request', HTTP_Response);
+server.listen(8080);
 
 console.log('Servidor ejecutándose en puerto 8080...');
