@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 const express = require('express');
 const app = express();
 
-const logger = require('morgan')
+const logger = require('morgan');
 
 app.get('/hola/:unNombre', (req, res) => {
     res.status(200).send({mensaje: `Hola ${req.params.unNombre} desde SD!`});
