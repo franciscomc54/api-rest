@@ -75,6 +75,16 @@ app.put('/api/:coleccion/:id', (req, res, next) => {
     });
 });
 
+//DELETE
+app.delete('/api/:coleccion/:id', (req, res, next) => {
+    let elementoId = req.params.id;
+
+    req.collection.remove({_id: id(elementoId)}, (err, resultado) => {
+        if(err) return next(err);
+        res.json(resultado);
+    });
+});
+
 //INICIO
 app.listen(port, () => {
     console.log(`API REST ejecutandose en http://localhost:${port}/api/:coleccion/:id`);
