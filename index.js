@@ -7,6 +7,18 @@ const app = express();
 
 const logger = require('morgan');
 
+const mongojs = require('mongojs');
+
+var db = mongojs("SD");
+
+let elementoId = req.params.id;
+let elementoData = req.body;
+
+app.param("coleccion", (req, res, next, coleccion) => {
+    req.collection = db.collection(coleccion);
+    return next();
+});
+
 app.get('/hola/:unNombre', (req, res) => {
     res.status(200).send({mensaje: `Hola ${req.params.unNombre} desde SD!`});
 });
