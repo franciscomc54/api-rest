@@ -69,10 +69,11 @@ app.post('/api/:coleccion', (req, res, next) => {
 app.put('/api/:coleccion/:id', (req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
-    req.collection.update({_id: id(elementoId)}, (err, resultado) => {
-        if(err) return next(err);
-        res.json(resultado);
-    });
+    req.collection.update({_id: id(elementoId)},
+        {$set: elementoNuevo}, {safe: true, multi: false}, (err, elementoModif) => {
+            if(err) return next(err);
+            res.json(elementoModif);
+        });
 });
 
 //DELETE
