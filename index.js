@@ -1,95 +1,81 @@
 'use strict'
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 
 const express = require('express');
-const app = express();
-
 const logger = require('morgan');
-
 const mongojs = require('mongojs');
 
+const app = express();
+
 var db = mongojs("SD");
+var id = mongojs.ObjectId;
 
-let elementoId = req.params.id;
-let elementoData = req.body;
-
+app.use(logger('dev'));
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 app.param("coleccion", (req, res, next, coleccion) => {
+    console.log('param /api/:coleccion');
+    console.log('coleccion: ', coleccion);
+
     req.collection = db.collection(coleccion);
     return next();
 });
 
-app.get('/hola/:unNombre', (req, res) => {
-    res.status(200).send({mensaje: `Hola ${req.params.unNombre} desde SD!`});
-});
+//GET
+app.get('/api', (req, res, next) => {
+    console.log('GET /api');
+    console.log(req.params);
+    console.log(req.collection);
 
-//Declarar middlewares
-app.use(logger('dev'));
-//app.use(express.urlencoded());
-app.use(express.json());
-
-//Declarar las rutas del servicio, junto con sus controladores y logica de negocio
-app.get('/api/product', getProductsController);
-
-function getProductsController (req, res) {
-    //Aqui va la logica de negocio
-    //ahora se simula la base de datos, que no hay
-
-    res.status(200).send({
-        msg: 'Ahí va la tabla productos',
-        productos: []
-    });
-}
-
-//Lo siguiente equivale al app y function de justo arriba
-app.get('/api/product/:productID', (req, res) => {
-    const id = req.params.productID;
-    //Aqui va la logica de negocio
-
-    res.status(200).send({
-        msg: `Ahí va el producto ${id} solicitado`,
-        producto: id
-    })
-});
-
-app.post('/api/product', (req, res) => {
-    const miNuevoProducto = req.body;
-
-    console.log(miNuevoProducto);
-    //Aqui va la logica de negocio
-    res.status(200).send({
-        msg: 'He creado el nuevo producto',
-        producto: miNuevoProducto
+    db.getCollectionNames((err, colecciones) => {
+        if(err) return next(err);
+        res.json(colecciones);
     });
 });
-//una vez creado esto hemos pasado a postman
-//ponia undefined en la terminal y no salia en postman, por eso se ha puesto la linea de use(express.json())
 
-app.put('/api/product/:productID', (req, res) => {
-    const id = req.params.productID;
-    const cambios = req.body;
-
-    //Aqui va la logica de negocio
-    res.status(200).send({
-        msg: `He actualizado el producto ${id}`,
-        producto: id,
-        cambios: cambios
-    })
+app.get('/api/:coleccion', (req, res, next) => {
+    req.collection.find((err, coleccion) => {
+        if(err) return next(err);
+        res.json(coleccion);
+    });
 });
 
-app.delete('/api/product/:productID', (req, res) => {
-    const id = req.params.productID;
-
-    //Aqui va la logica de negocio
-    res.status(200).send({
-        msg: `He eliminado el producto ${id}`,
-        producto: id
-    })
+app.get('/api/:coleccion/:id', (req, res, next) => {
+    req.collection.findOne({_id: id(req.params.id) }, (err, elemento) => {
+        if(err) return next(err);
+        res.json(elemento);
+    });
 });
 
-//Lanzamos el servicio
+//POST
+app.post('/api/:coleccion', (req, res, next) => {
+    const elemento = req.body;
 
-//para que pueda cambiar con el $ hay que poner las comillas de al lado de la letra p en el teclado
+    if(!elemento.nombre) {
+        res.status(400).json({
+            error: 'Bad data',
+            description: 'Se precisa al menos un campo <nombre>'
+        });
+    } else {
+        req.collection.save(elemento, (err, coleccionGuardada) => {
+            if(err) return next(err);
+            res.json(coleccionGuardada);
+        });
+    }
+});
+
+//PUT
+app.put('/api/:coleccion/:id', (req, res, next) => {
+    let elementoId = req.params.id;
+    let elementoNuevo = req.body;
+    req.collection.update({_id: id(elementoId)}, (err, resultado) => {
+        if(err) return next(err);
+        res.json(resultado);
+    });
+});
+
+//INICIO
 app.listen(port, () => {
-    console.log(`API REST ejecutándose en http://localhost:${port}/api/product`);
+    console.log(`API REST ejecutandose en http://localhost:${port}/api/:coleccion/:id`);
 });
