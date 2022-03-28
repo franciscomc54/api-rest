@@ -42,6 +42,10 @@ var auth = (req, res, next) => {
 app.use(logger('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
+app.use(cors());
+app.use(allowCrossTokenHeader);
+app.use(allowCrossTokenOrigin);
+
 app.param("coleccion", (req, res, next, coleccion) => {
     console.log('param /api/:coleccion');
     console.log('coleccion: ', coleccion);
@@ -50,9 +54,6 @@ app.param("coleccion", (req, res, next, coleccion) => {
     return next();
 });
 
-app.use(cors());
-app.use(allowCrossTokenHeader);
-app.use(allowCrossTokenOrigin);
 
 //GET
 app.get('/api', (req, res, next) => {
